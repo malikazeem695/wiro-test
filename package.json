@@ -1,0 +1,14 @@
+{
+  "name": "bird-and-blend-tea",
+  "scripts": {
+      "tailwind": "npx tailwindcss -i ./tailwind-config.css -o ./assets/tailwind.css --watch",
+      "start": "shopify theme dev -s $npm_package_name --theme-editor-sync --live-reload full-page",
+      "pull": "shopify theme pull -s $npm_package_name",
+      "pull-live": "shopify theme pull -s $npm_package_name --live",
+      "push": "shopify theme push -s $npm_package_name",
+      "pull-start": "npm run pull-live && npm start"
+  },
+  "devDependencies": {
+      "tailwindcss": "^3.4.13"
+  }
+}
