@@ -186,7 +186,7 @@
                               {%- for property in item.properties -%}
                                 {%- assign property_first_char = property.first | slice: 0 -%}
                                 {%- if property.last != blank and property_first_char != '_' -%}
-                                  <div class="product-option">
+                                  <div class="product-option tw-hidden">
                                     <dt>{{ property.first }}:</dt>
                                     <dd>
                                       {%- if property.last contains '/uploads/' -%}
@@ -458,11 +458,17 @@
                                 {%- assign itemprice = item.original_line_price | money -%}
                                 {%- assign itemid = item.variant.id -%}
                               {%- endif -%}
+                              
+                              {% if property.first == 'Embroidered Name' %}
+                                
+                                {% assign embname = property.first %}
+
+                              {% endif %}
                             {%- endfor -%}
                           {%- endif -%}
                         {%- endfor -%}
-                        <td class="tw-p-0 tw-col-span-4 embroidry_widget {% if emb-item-added %}itemadded{% else %}itemnotadded{% endif %}" {% if emb-item-added %}itemid="{{ itemid }}"{% endif %}>
-                          <div class="embroidery_widget_container tw-py-[12px] tw-px-[16px] tw-relative tw-w-full tw-flex tw-justify-between tw-items-center tw-self-stretch" added-foritem="{{ item.title |  escape }}">
+                        <td class="tw-py-[12px] tw-px-[16px] tw-col-span-4 embroidry_widget {% if emb-item-added %}itemadded{% else %}itemnotadded{% endif %}" {% if emb-item-added %}itemid="{{ itemid }}"{% endif %}>
+                          <div class="embroidery_widget_container tw-relative tw-w-full tw-flex tw-items-center tw-self-stretch" added-foritem="{{ item.title |  escape }}">
                          
                             <div class="tw-left-[0] tw-flex tw-items-center tw-gap-[8px] tw-top-[0] select-embroidry">
                             <span class="checkbox-icon tw-flex tw-w-[20px] tw-h-[20px] tw-items-center tw-justify-center">
@@ -478,8 +484,19 @@
                               Add Embroidered Name
                             </label>
                             </div>
-                            <p class="tw-m-0 tw-text-[16px] body-medium-font">{{ itemprice }}</p>
+                            <p class="tw-m-0 tw-text-[16px] body-medium-font tw-pl-[5px]">(+{{ itemprice }})</p>
+                            
+                            
                           </div>
+                          {% if emb-item-added %}
+                            <div class="embroided_name body-mobile-small-font tw-ml-[2px]">
+                              Embroidered Name: 
+                              {% for property in item.properties %}
+                              {{ property.last }}{% if forloop.last %}{% else %},{% endif %} 
+                              {% endfor %}
+                              
+                            </div>
+                          {% endif %}
                         </td>
                               
                       </tr>

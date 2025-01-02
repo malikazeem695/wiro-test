@@ -12,6 +12,25 @@ font-weight: 400;
 line-height: 26px;
 letter-spacing: 0.16px;
 }
+
+.body-mobile-small-font{
+  font-family: 'Balsamiq Sans';
+  font-style: normal;
+font-weight: 400;
+line-height: 19px;
+font-size: 12px;
+letter-spacing: 0.12px;
+color: #757575;
+}
+
+.font_copse{
+  font-family: "Copse", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.font_copse:last-child{
+  font-family: "Cookie", serif;
+}
 .embroidry_options{
   gap: 0;
 }
@@ -51,9 +70,9 @@ letter-spacing: 0.16px;
   display: none;
 }
 .cart-drawer .embroidry_widget {
-  padding: unset !important;
+  padding: 12px !important;
 }
-.cart-drawer .embroidry_widget .embroidery_widget_container{
+.cart-drawer .embroidry_widget.itemadded {
   background-color: #F5F5F5;
 }
 input#embroidry-color, input#embroidry-font {

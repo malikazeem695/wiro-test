@@ -134,6 +134,14 @@
   margin-bottom: 40px
 }
 
+.tw-ml-\[2px\] {
+  margin-left: 2px
+}
+
+.tw-ml-\[5px\] {
+  margin-left: 5px
+}
+
 .tw-flex {
   display: flex
 }
@@ -335,6 +343,10 @@
 
 .tw-pl-\[2px\] {
   padding-left: 2px
+}
+
+.tw-pl-\[5px\] {
+  padding-left: 5px
 }
 
 .tw-text-\[14px\] {
