@@ -442,7 +442,7 @@
                             </div>
                           </quantity-popover>
                         </td>
-                        {%- assign getmainitemtitle = item.product.title -%}
+                        {%- assign getmainitemid = item.variant.id -%}
                         {% assign embroidry_handle = 'embroidry-options' %}
 {% assign embroidry-product = all_products[embroidry_handle] %}
 {%- assign itemprice = embroidry-product.price | money -%}
@@ -452,8 +452,8 @@
                           {%- if item.product.title == 'Embroidry Options' -%}
 
                             {%- for property in item.properties -%}
-                              
-                              {%- if property.last == getmainitemtitle -%}
+                              {% assign propertyval = property.last |  times: 1 %}
+                              {%- if propertyval == getmainitemid -%}
                                 {%- assign emb-item-added = true -%}
                                 {%- assign itemprice = item.original_line_price | money -%}
                                 {%- assign itemid = item.variant.id -%}

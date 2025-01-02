@@ -213,7 +213,8 @@ if (!customElements.get('product-form')) {
       async addToCart(variantId) {
         
         try {
-          const productTitle = document.querySelector('.main_product_title')?.textContent.trim();
+          var productID = document.querySelector('.product-variant-id').getAttribute('value');
+          productID = parseInt(productID);
           const response = await fetch('/cart/add.js', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -221,7 +222,7 @@ if (!customElements.get('product-form')) {
               id: variantId,
               quantity: 1,
               properties: {
-                'For Product': productTitle,
+                'For Variant': productID,
               }
             }),
           });
