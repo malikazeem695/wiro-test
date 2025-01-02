@@ -1,16 +1,74 @@
+
 class CartRemoveButton extends HTMLElement {
   constructor() {
     super();
-
+  
     this.addEventListener('click', (event) => {
       event.preventDefault();
+  
       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
-      cartItems.updateQuantity(this.dataset.index, 0);
+      const clickedElement = event.target;
+  
+      // Find the parent element with class 'cart-item'
+      const parentCartItem = clickedElement.closest('.cart-item');
+  
+      if (parentCartItem) {
+        // Find the child element with class 'itemadded' within the parent
+        const linkedItemElement = parentCartItem.querySelector('.itemadded');
+  
+        if (linkedItemElement) {
+          // Get the 'itemid' attribute value of the child element
+          const itemId = linkedItemElement.getAttribute('itemid');
+  
+          if (itemId) {
+            const body = JSON.stringify({
+              id: itemId,
+              quantity: 0,
+            });
+  
+            fetch('/cart/change.js', { ...fetchConfig(), ...{ body } })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data) {
+                  console.log('Linked item removed successfully.');
+                } else {
+                  console.error('Failed to remove the linked item. Data is empty or undefined.');
+                }
+              })
+              .catch((error) => {
+                console.error('Error removing linked item:', error);
+              })
+              .finally(() => {
+                // Always update the main item's quantity
+                if (cartItems) {
+                  cartItems.updateQuantity(this.dataset.index, 0);
+                } else {
+                  console.error('CartItems instance not found.');
+                }
+              });
+          } else {
+            console.error('Item ID attribute is missing or empty.');
+          }
+        } else {
+          console.log('No linked item to remove.');
+  
+          // Update the main item's quantity when no linked element exists
+          if (cartItems) {
+            cartItems.updateQuantity(this.dataset.index, 0);
+          } else {
+            console.error('CartItems instance not found.');
+          }
+        }
+      } else {
+        console.error('No parent element with class "cart-item" found.');
+      }
     });
   }
+  
 }
 
 customElements.define('cart-remove-button', CartRemoveButton);
+
 
 class CartItems extends HTMLElement {
   constructor() {
@@ -29,11 +87,14 @@ class CartItems extends HTMLElement {
 
   connectedCallback() {
     this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
+      
       if (event.source === 'cart-items') {
         return;
       }
+      
       this.onCartUpdate();
     });
+    this.setupItemAddedListener();
   }
 
   disconnectedCallback() {
@@ -53,6 +114,43 @@ class CartItems extends HTMLElement {
     event.target.reportValidity();
     this.resetQuantityInput(index);
     event.target.select();
+  }
+
+  removeItem(lineItemId) {
+    const body = JSON.stringify({
+      id: lineItemId, // Line item ID for Shopify cart
+      quantity: 0,    // Set quantity to 0 to remove the item
+    });
+
+    fetch('/cart/change.js', { ...fetchConfig(), ...{ body } })
+      .then((response) => response.json())
+      .then((data) => {
+        this.onCartUpdate();
+      })
+      .catch((error) => {
+        console.error('Error removing item:', error);
+      });
+  }
+
+  refreshCart(data) {
+    if (!data) return;
+
+    const cartSections = this.getSectionsToRender();
+    cartSections.forEach((section) => {
+      const elementToReplace =
+        document.getElementById(section.id).querySelector(section.selector) ||
+        document.getElementById(section.id);
+
+      if (elementToReplace && data.sections[section.section]) {
+        elementToReplace.innerHTML = this.getSectionInnerHTML(data.sections[section.section], section.selector);
+      }
+    });
+
+    this.classList.toggle('is-empty', data.item_count === 0);
+    const cartDrawerWrapper = document.querySelector('cart-drawer');
+    if (cartDrawerWrapper) cartDrawerWrapper.classList.toggle('is-empty', data.item_count === 0);
+
+    publish(PUB_SUB_EVENTS.cartUpdate, { source: 'cart-items', cartData: data });
   }
 
   validateQuantity(event) {
@@ -84,6 +182,21 @@ class CartItems extends HTMLElement {
 
   onChange(event) {
     this.validateQuantity(event);
+  }
+
+  setupItemAddedListener() {
+    document.querySelectorAll('.itemadded').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const itemId = button.getAttribute('itemid');
+
+        if (itemId && itemId.trim() !== '') {
+          this.removeItem(itemId); // Call the method in this class
+        } else {
+          console.error('Invalid or empty item ID.');
+        }
+      });
+    });
   }
 
   onCartUpdate() {
@@ -168,6 +281,7 @@ class CartItems extends HTMLElement {
           this.updateLiveRegions(line, parsedState.errors);
           return;
         }
+      
 
         this.classList.toggle('is-empty', parsedState.item_count === 0);
         const cartDrawerWrapper = document.querySelector('cart-drawer');

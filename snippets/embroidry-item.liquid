@@ -1,0 +1,209 @@
+{% assign product_handle = 'embroidry-options' %}
+{% assign emb-product = all_products[product_handle] %}
+<select class="tw-hidden embroidery_item_variant">
+{% for variant in emb-product.variants %}
+  <option value="{{ variant.id }}" title="{{ variant.title }}">{{ variant.title }}</option>
+{% endfor %}
+</select>
+{% if product.metafields.custom.product_has_embroidery_option %}
+    <div class="embroidry_options default-secondry-bg tw-p-[16px] tw-mb-[40px] tw-flex tw-flex-col tw-gap-[16px]">
+      <div class="embroidry_option_checkbox tw-relative tw-w-full tw-flex tw-justify-between tw-items-center tw-self-stretch">
+        <input type="checkbox" aria-label="Add Embroidered Name" id="accept-embroidery" />
+        <div class="tw-absolute tw-left-[0] tw-flex tw-items-center tw-gap-[8px] tw-top-[0] select-embroidry">
+        <span class="checkbox-icon tw-flex tw-w-[20px] tw-h-[20px] tw-items-center tw-justify-center">
+          {% render 'uncheck' %}
+          {% render 'checked-icon' %}
+        </span>
+        <label class="tw-text-[16px] body-medium-font" for="accept-embroidery">
+          Add Embroidered Name
+        </label>
+        </div>
+        <p class="tw-m-0 tw-text-[16px] body-medium-font">{{ emb-product.price | money }}</p>
+      </div>
+      <div class="metafields_data tw-flex tw-items-start tw-gap-[40px] tw-flex-1 tw-flex-col lmd:tw-flex-row">
+      <div class="embroidry-fields tw-flex tw-flex-col tw-items-start tw-gap-[24px] tw-flex-[1_0_0]">
+        {% assign character_limit = product.metafields.custom.name_character_limit %}
+  
+  {% if character_limit %}
+    <div class="embroidered-name tw-flex tw-flex-col tw-items-start tw-gap-[8px] tw-self-stretch" character-limit="{{ character_limit }}">
+    <label class="default-text-color tw-text-[16px] body-medium-font" for="custom-text">
+      Add up to {{ character_limit }} characters
+    </label>
+    <input 
+      type="text" 
+      id="custom-text" 
+      name="properties[Embroidered Name]" 
+      class="tw-focus:outline-none tw-flex tw-min-w-[160px] tw-border-solid tw-px-[var(--sds-size-space-400)] tw-py-[var(--Spacing-Desktop-XS)] tw-items-center tw-self-stretch tw-rounded-[var(--Radius-Desktop-100)] tw-border-[1px] tw-border-[var(--Border-Default-Secondary)] tw-bg-[var(--Background-Default-Dominant)]"
+      maxlength="{{ character_limit }}" 
+      placeholder="Embroidered Name" 
+    />
+    </div>
+  {% endif %}
+  {% for option in emb-product.options %}
+    {% assign values = product.variants | map: 'option' | uniq %}
+    {% assign option_index = forloop.index0 %}
+    {% assign option_values = '' %}
+    {% for variant in emb-product.variants %}
+      {% assign value = variant.options[option_index] %}
+      {% unless option_values contains value %}
+        {% assign option_values = option_values | append: value | append: ',' %}
+      {% endunless %}
+    {% endfor %}
+    {% assign unique_values = option_values | split: ',' | uniq %}
+    {% case option %}
+    {% when 'Color' %}
+  {% assign colors = product.metafields.custom.letters_color | split: ',' %}
+
+  {% if colors %}
+ 
+   
+
+    <div class="tw-flex tw-flex-col tw-items-start tw-gap-[8px] tw-self-stretch">
+      <p class="default-text-color tw-text-[16px] body-medium-font tw-m-0 tw-h-[26px]">Choose letter colour
+        <input 
+        type="text" 
+        id="embroidry-color" 
+        name="properties[Name with Color]"
+        class="tw-max-h-0 tw-overflow-hidden"
+      />
+      </p>
+      <div class="tw-flex tw-items-center tw-gap-[16px] tw-self-stretch tw-pl-[2px]">
+       
+        {% for value in unique_values %}
+        {% for color in colors %}
+          {% assign fixcolor = color | remove: '[' | remove: '"' | remove: ']' %}
+          {% case fixcolor %}
+            {% when "#ffffff" %}
+              {% assign color_name = "White" %}
+            {% when "#ffd700" %}
+              {% assign color_name = "Gold" %}
+            {% else %}
+              {% assign color_name = color %}
+          {% endcase %}
+          {% if color_name == value %}
+          <label class="emb_color tw-flex-col tw-cursor-pointer tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-[8px]" color-name="{{ color_name }}">
+            <span class="color_olipse tw-w-[40px] tw-h-[40px] tw-rounded-full tw-border tw-border-[1px] tw-border-solid tw-border-[var(--Border-Default-Secondary)]" style="background-color: {{ fixcolor }};"></span>
+            <span class="body-small-font tw-text-[14px]">          
+            {{ color_name }}
+            </span>
+          </label>
+        {% endif %}
+        {% endfor %}
+   
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+  {% when 'Font' %}
+  {% assign fonts = product.metafields.custom.letters_font | split: ',' %}
+  
+  {% if fonts and fonts.size > 0 %}
+    <div class="tw-flex tw-flex-col tw-items-start tw-gap-[8px] tw-self-stretch">
+      <p class="default-text-color tw-text-[16px] body-medium-font tw-m-0 tw-h-[26px]">Choose font
+
+      <input 
+      type="text" 
+      id="embroidry-font" 
+      name="properties[Font]"
+    />
+
+      </p>
+      <div class="tw-flex tw-items-center tw-gap-[16px] tw-self-stretch">
+        {% for value in unique_values %}
+       
+        {% for font in fonts %}
+          {% assign fixedfont = font | remove: '[' | remove: '"' | remove: ']' %}
+          {% if fixedfont == value %}
+          <span class="font_option tw-border tw-border-[1px] tw-border-solid tw-border-[var(--Border-Default-Secondary)] tw-rounded-[4px] tw-flex tw-min-w-[93px] tw-px-2.5 tw-py-3 tw-justify-center tw-items-center tw-gap-2 tw-flex-1 tw-cursor-pointer" font="{{ fixedfont }}">
+              {{ fixedfont }}
+          </span>
+          {% endif %}
+        {% endfor %}
+    {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endcase %}
+{% endfor %}
+  </div>
+  
+  {% if product.metafields.custom.mockup_image %}
+    <div class="mockup-image-container tw-w-[228px] tw-h-[228px] tw-flex-shrink-0">
+      <img 
+        src="{{ product.metafields.custom.mockup_image | img_url: 'large' }}" 
+        alt="Mockup Image for {{ product.title }}" 
+        class="tw-w-full tw-object-cover tw-rounded-lg" />
+    </div>
+  {% endif %}
+  
+  
+      </div>
+  
+      <div class="bottom_text tw-text-[16px] body-medium-font">
+        Unfortunately we can not accept returns or exchanges on embroidered items.
+      </div>
+    </div>
+  {% endif %}
+
+
+  <script>
+
+document.querySelectorAll('.select-embroidry').forEach((element) => {
+  element.addEventListener('click', () => {
+    const parent = element.closest('.embroidry_options');
+    const customTextInput = document.getElementById('custom-text');
+    const embroidrycolor = document.getElementById('embroidry-color');
+    const embroidryfont = document.getElementById('embroidry-font');
+    if (parent) {
+      parent.classList.toggle('active');
+      if (parent.classList.contains('active')) {
+        // Add the required attribute when the active class is added
+        customTextInput.setAttribute('required', true);
+        embroidrycolor.setAttribute('required', true);
+        embroidryfont.setAttribute('required', true);
+      } else {
+        // Remove the required attribute when the active class is removed
+        customTextInput.removeAttribute('required');
+        embroidrycolor.removeAttribute('required');
+        embroidryfont.removeAttribute('required');
+      }
+    }
+  });
+});
+
+    document.querySelectorAll('.emb_color').forEach((element) => {
+  element.addEventListener('click', function () {
+    // Remove 'active' class from all elements with 'emb_color' class
+    document.querySelectorAll('.emb_color').forEach((el) => el.classList.remove('active'));
+
+    // Add 'active' class to the clicked element
+    this.classList.add('active');
+    const colorName = this.getAttribute('color-name');
+// Assign the value to the input element with the id 'embroidry-color'
+const colorInput = document.getElementById('embroidry-color');
+if (colorInput) {
+  colorInput.value = colorName;
+}
+
+  });
+});
+
+  document.querySelectorAll('.font_option').forEach((element) => {
+  element.addEventListener('click', function () {
+    // Remove 'active' class from all elements with 'font_option' class
+    document.querySelectorAll('.font_option').forEach((el) => el.classList.remove('active'));
+
+    // Add 'active' class to the clicked element
+    this.classList.add('active');
+
+    const colorName = this.getAttribute('font');
+// Assign the value to the input element with the id 'embroidry-color'
+const colorInput = document.getElementById('embroidry-font');
+if (colorInput) {
+  colorInput.value = colorName;
+}
+  });
+
+});
+
+  </script>

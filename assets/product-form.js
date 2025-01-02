@@ -17,8 +17,9 @@ if (!customElements.get('product-form')) {
         this.hideErrors = this.dataset.hideErrors === 'true';
       }
 
-      onSubmitHandler(evt) {
+      async onSubmitHandler(evt) {
         evt.preventDefault();
+
         if (this.submitButton.getAttribute('aria-disabled') === 'true') return;
 
         this.handleErrorMessage();
@@ -26,7 +27,115 @@ if (!customElements.get('product-form')) {
         this.submitButton.setAttribute('aria-disabled', true);
         this.submitButton.classList.add('loading');
         this.querySelector('.loading__spinner').classList.remove('hidden');
+        if (document.querySelector('.embroidry_options.active')) {
 
+        let addedToCart = false;
+
+        // Check if the custom options are active
+        const embOptions = document.querySelectorAll('.embroidry_options');
+        for (const optionContainer of embOptions) {
+          if (optionContainer.classList.contains('active')) {
+            // Get input values and attributes if custom options are active
+            const color = document.getElementById('embroidry-color')?.value.trim();
+            const font = document.getElementById('embroidry-font')?.value.trim();
+            const characterLimit = optionContainer.querySelector('.embroidered-name')?.getAttribute('character-limit')?.trim();
+
+            if (color && font && characterLimit) {
+              // Get the select element for the embroidery item variant
+              const selectElement = document.querySelector('.embroidery_item_variant');
+
+              if (selectElement) {
+                // Find matching option based on title
+                let selectedVariantId = null;
+
+                Array.from(selectElement.options).forEach((option) => {
+                  const title = option.getAttribute('title');
+                  if (title && title.includes(color) && title.includes(font) && title.includes(characterLimit)) {
+                    selectedVariantId = option.value; // Get variant ID
+                  }
+                });
+
+                if (selectedVariantId) {
+                  // Add variant to cart
+                  const response = await this.addToCart(selectedVariantId);
+                  if (response.ok) {
+                    addedToCart = true;
+                  } else {
+                    console.error('Failed to add embroidery options to cart');
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        // Only add the main product if no custom options are added
+        if (!addedToCart) {
+          const response = await this.addToCart(this.variantIdInput.value);
+          if (response.ok) {
+            console.log('Main product added to cart.');
+          } else {
+            console.error('Failed to add main product to cart');
+          }
+        }
+
+        // Handle final form submission for the cart
+        const config = fetchConfig('javascript');
+        config.headers['X-Requested-With'] = 'XMLHttpRequest';
+        delete config.headers['Content-Type'];
+
+        const formData = new FormData(this.form);
+        if (this.cart) {
+          formData.append(
+            'sections',
+            this.cart.getSectionsToRender().map((section) => section.id)
+          );
+          formData.append('sections_url', window.location.pathname);
+          this.cart.setActiveElement(document.activeElement);
+        }
+        config.body = formData;
+
+        try {
+          const cartResponse = await fetch(`${routes.cart_add_url}`, config);
+          const data = await cartResponse.json();
+
+          if (data.status) {
+            publish(PUB_SUB_EVENTS.cartError, {
+              source: 'product-form',
+              productVariantId: formData.get('id'),
+              errors: data.errors || data.description,
+              message: data.message,
+            });
+            this.handleErrorMessage(data.description);
+            this.error = true;
+            return;
+          }
+
+          if (!this.cart) {
+            window.location = window.routes.cart_url;
+            return;
+          }
+
+          if (!this.error) {
+            publish(PUB_SUB_EVENTS.cartUpdate, {
+              source: 'product-form',
+              productVariantId: formData.get('id'),
+              cartData: data,
+            });
+          }
+
+          this.error = false;
+          this.cart.renderContents(data);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          this.submitButton.classList.remove('loading');
+          if (this.cart && this.cart.classList.contains('is-empty')) this.cart.classList.remove('is-empty');
+          if (!this.error) this.submitButton.removeAttribute('aria-disabled');
+          this.querySelector('.loading__spinner').classList.add('hidden');
+        }
+      }
+      else{
         const config = fetchConfig('javascript');
         config.headers['X-Requested-With'] = 'XMLHttpRequest';
         delete config.headers['Content-Type'];
@@ -98,6 +207,29 @@ if (!customElements.get('product-form')) {
             if (!this.error) this.submitButton.removeAttribute('aria-disabled');
             this.querySelector('.loading__spinner').classList.add('hidden');
           });
+      }
+      }
+
+      async addToCart(variantId) {
+        
+        try {
+          const productTitle = document.querySelector('.main_product_title')?.textContent.trim();
+          const response = await fetch('/cart/add.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: variantId,
+              quantity: 1,
+              properties: {
+                'For Product': productTitle,
+              }
+            }),
+          });
+          return response;
+        } catch (error) {
+          console.error('Error adding product to cart:', error);
+          return { ok: false };
+        }
       }
 
       handleErrorMessage(errorMessage = false) {

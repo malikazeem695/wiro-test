@@ -118,7 +118,9 @@
 
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
-                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row">
+                      {%- if item.product.title == 'Embroidry Options' -%}
+                        {%- else -%}
+                      <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="hereis cart-item {{ item.product.title |  handleize }}" role="row">
                         <td class="cart-item__media" role="cell" headers="CartDrawer-ColumnProductImage">
                           {% if item.image %}
                             {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
@@ -440,7 +442,48 @@
                             </div>
                           </quantity-popover>
                         </td>
+                        {%- assign getmainitemtitle = item.product.title -%}
+                        {% assign embroidry_handle = 'embroidry-options' %}
+{% assign embroidry-product = all_products[embroidry_handle] %}
+{%- assign itemprice = embroidry-product.price | money -%}
+{%- assign emb-item-added = false -%}
+{%- assign itemid = '' -%}
+                        {%- for item in cart.items -%}
+                          {%- if item.product.title == 'Embroidry Options' -%}
+
+                            {%- for property in item.properties -%}
+                              
+                              {%- if property.last == getmainitemtitle -%}
+                                {%- assign emb-item-added = true -%}
+                                {%- assign itemprice = item.original_line_price | money -%}
+                                {%- assign itemid = item.variant.id -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          {%- endif -%}
+                        {%- endfor -%}
+                        <td class="tw-p-0 tw-col-span-4 embroidry_widget {% if emb-item-added %}itemadded{% else %}itemnotadded{% endif %}" {% if emb-item-added %}itemid="{{ itemid }}"{% endif %}>
+                          <div class="embroidery_widget_container tw-py-[12px] tw-px-[16px] tw-relative tw-w-full tw-flex tw-justify-between tw-items-center tw-self-stretch" added-foritem="{{ item.title |  escape }}">
+                         
+                            <div class="tw-left-[0] tw-flex tw-items-center tw-gap-[8px] tw-top-[0] select-embroidry">
+                            <span class="checkbox-icon tw-flex tw-w-[20px] tw-h-[20px] tw-items-center tw-justify-center">
+                              <svg xmlns="http://www.w3.org/2000/svg" class="uncheck tw-flex tw-content-center" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M2.5 10C2.5 6.71252 2.5 5.06878 3.40796 3.96243C3.57418 3.75989 3.75989 3.57418 3.96243 3.40796C5.06878 2.5 6.71252 2.5 10 2.5V2.5C13.2875 2.5 14.9312 2.5 16.0376 3.40796C16.2401 3.57418 16.4258 3.75989 16.592 3.96243C17.5 5.06878 17.5 6.71252 17.5 10V10C17.5 13.2875 17.5 14.9312 16.592 16.0376C16.4258 16.2401 16.2401 16.4258 16.0376 16.592C14.9312 17.5 13.2875 17.5 10 17.5V17.5C6.71252 17.5 5.06878 17.5 3.96243 16.592C3.75989 16.4258 3.57418 16.2401 3.40796 16.0376C2.5 14.9312 2.5 13.2875 2.5 10V10Z" stroke="#1E1E1E"></path>
+                    </svg>
+                              <svg xmlns="http://www.w3.org/2000/svg" class="checked-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M2.5 10C2.5 6.71252 2.5 5.06878 3.40796 3.96243C3.57418 3.75989 3.75989 3.57418 3.96243 3.40796C5.06878 2.5 6.71252 2.5 10 2.5C13.2875 2.5 14.9312 2.5 16.0376 3.40796C16.2401 3.57418 16.4258 3.75989 16.592 3.96243C17.5 5.06878 17.5 6.71252 17.5 10C17.5 13.2875 17.5 14.9312 16.592 16.0376C16.4258 16.2401 16.2401 16.4258 16.0376 16.592C14.9312 17.5 13.2875 17.5 10 17.5C6.71252 17.5 5.06878 17.5 3.96243 16.592C3.75989 16.4258 3.57418 16.2401 3.40796 16.0376C2.5 14.9312 2.5 13.2875 2.5 10Z" fill="#1E1E1E"></path>
+                      <path d="M6.66634 10L9.16634 12.5L13.333 7.5" stroke="white"></path>
+                    </svg>
+                            </span>
+                            <label class="tw-text-[16px] body-medium-font" for="accept-embroidery">
+                              Add Embroidered Name
+                            </label>
+                            </div>
+                            <p class="tw-m-0 tw-text-[16px] body-medium-font">{{ itemprice }}</p>
+                          </div>
+                        </td>
+                              
                       </tr>
+                          {%- endif -%}
                     {%- endfor -%}
                   </tbody>
                 </table>
