@@ -2,30 +2,30 @@
 class CartRemoveButton extends HTMLElement {
   constructor() {
     super();
-  
+
     this.addEventListener('click', (event) => {
       event.preventDefault();
-  
+
       const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
       const clickedElement = event.target;
-  
+
       // Find the parent element with class 'cart-item'
       const parentCartItem = clickedElement.closest('.cart-item');
-  
+
       if (parentCartItem) {
         // Find the child element with class 'itemadded' within the parent
         const linkedItemElement = parentCartItem.querySelector('.itemadded');
-  
+
         if (linkedItemElement) {
           // Get the 'itemid' attribute value of the child element
           const itemId = linkedItemElement.getAttribute('itemid');
-  
+
           if (itemId) {
             const body = JSON.stringify({
               id: itemId,
               quantity: 0,
             });
-  
+
             fetch('/cart/change.js', { ...fetchConfig(), ...{ body } })
               .then((response) => response.json())
               .then((data) => {
@@ -51,7 +51,7 @@ class CartRemoveButton extends HTMLElement {
           }
         } else {
           console.log('No linked item to remove.');
-  
+
           // Update the main item's quantity when no linked element exists
           if (cartItems) {
             cartItems.updateQuantity(this.dataset.index, 0);
@@ -64,7 +64,7 @@ class CartRemoveButton extends HTMLElement {
       }
     });
   }
-  
+
 }
 
 customElements.define('cart-remove-button', CartRemoveButton);
@@ -87,11 +87,11 @@ class CartItems extends HTMLElement {
 
   connectedCallback() {
     this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
-      
+
       if (event.source === 'cart-items') {
         return;
       }
-      
+
       this.onCartUpdate();
     });
     this.setupItemAddedListener();
@@ -281,7 +281,7 @@ class CartItems extends HTMLElement {
           this.updateLiveRegions(line, parsedState.errors);
           return;
         }
-      
+
 
         this.classList.toggle('is-empty', parsedState.item_count === 0);
         const cartDrawerWrapper = document.querySelector('cart-drawer');

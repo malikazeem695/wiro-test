@@ -1,47 +1,53 @@
 @font-face {
-    font-family: 'Balsamiq Sans';
-    src: url('{{ "BalsamiqSans-Regular.ttf" | asset_url }}') format('truetype');
-    font-weight: normal;
-    font-style: normal;
-  }
-  
-.body-medium-font{
-    font-family: 'Balsamiq Sans';
-    font-style: normal;
-font-weight: 400;
-line-height: 26px;
-letter-spacing: 0.16px;
+  font-family: 'Balsamiq Sans';
+  src: url('{{ "BalsamiqSans-Regular.ttf" | asset_url }}') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
-.body-mobile-small-font{
+.body-medium-font {
   font-family: 'Balsamiq Sans';
   font-style: normal;
-font-weight: 400;
-line-height: 19px;
-font-size: 12px;
-letter-spacing: 0.12px;
-color: #757575;
+  font-weight: 400;
+  line-height: 26px;
+  letter-spacing: 0.16px;
 }
 
-.font_copse{
+.body-mobile-small-font {
+  font-family: 'Balsamiq Sans';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 19px;
+  font-size: 12px;
+  letter-spacing: 0.12px;
+  color: #757575;
+}
+
+.font_copse {
   font-family: "Copse", serif;
   font-weight: 400;
   font-style: normal;
 }
-.font_copse:last-child{
+
+.font_copse:last-child {
   font-family: "Cookie", serif;
 }
-.embroidry_options{
+
+.embroidry_options {
   gap: 0;
 }
-.embroidry_options.active{
+
+.embroidry_options.active {
   gap: 16px;
 }
-.embroidry_options .metafields_data, .embroidry_options .bottom_text {
+
+.embroidry_options .metafields_data,
+.embroidry_options .bottom_text {
   max-height: 0;
   overflow: hidden;
   transition: max-height 1s ease;
 }
+
 .emb_color.active .color_olipse::after {
   content: " ";
   display: block;
@@ -53,59 +59,77 @@ color: #757575;
   margin-left: -3px;
   margin-top: -3px;
 }
-.font_option.active{
+
+.font_option.active {
   border-color: #2C2C2C;
   color: #1E1E1E;
 }
-.embroidery_item_variant{
+
+.embroidery_item_variant {
   display: none;
 }
-.embroidry_widget{
+
+.embroidry_widget {
   grid-column: 1 / 5;
 }
-.itemnotadded .checked-icon{
+
+.itemnotadded .checked-icon {
   display: none;
 }
+
 .itemadded .uncheck {
   display: none;
 }
+
 .cart-drawer .embroidry_widget {
   padding: 12px !important;
 }
+
 .cart-drawer .embroidry_widget.itemadded {
   background-color: #F5F5F5;
 }
-input#embroidry-color, input#embroidry-font {
+
+input#embroidry-color,
+input#embroidry-font {
   max-height: 0;
   padding: 0;
   margin: 0;
   border: 0;
 }
-.embroidry_options.active .metafields_data, .embroidry_options.active .bottom_text {
- max-height: none;
+
+.embroidry_options.active .metafields_data,
+.embroidry_options.active .bottom_text {
+  max-height: none;
 }
-.body-small-font{
-    font-family: 'Balsamiq Sans';
-    font-style: normal;
-font-weight: 400;
-line-height: 22px;
-letter-spacing: 0.14px;
+
+.body-small-font {
+  font-family: 'Balsamiq Sans';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 0.14px;
 }
+
 .embroidry_option_checkbox input[type="checkbox"] {
-   opacity: 0;
-  }
-  .embroidry_options .checked-icon{
-    display: none;
-  }  
-  .embroidry_options.active .checked-icon{
-    display: flex;
-  } 
-  .embroidry_options.active .uncheck{
-    display: none;
-  } 
-  .default-secondry-bg{
-    background-color: #F5F5F5;
-  }
-  .default-text-color{
-    color: #1E1E1E;
-  }
+  opacity: 0;
+}
+
+.embroidry_options .checked-icon {
+  display: none;
+}
+
+.embroidry_options.active .checked-icon {
+  display: flex;
+}
+
+.embroidry_options.active .uncheck {
+  display: none;
+}
+
+.default-secondry-bg {
+  background-color: #F5F5F5;
+}
+
+.default-text-color {
+  color: #1E1E1E;
+}
